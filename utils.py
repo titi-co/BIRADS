@@ -150,12 +150,12 @@ def featuresFolder(screen):
                 features.append(featuresFile(file.path))
                 types.append(i)
                 imgCount += 1
-                screen.progressBar['value'] = int((imgCount/5642)*100)
+                screen.progressBar['value'] = int((imgCount/2358)*100)
                 screen.update_idletasks()
-                screen.text.set(f"Gerando características...{imgCount}/5642")
+                screen.text.set(f"Gerando características...{imgCount}/2358")
     return features, types
 
-
+ 
 def trainModel(screen):
     """
     Recebe um objeto de tela como argumento e retorna um modelo treinado.

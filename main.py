@@ -378,7 +378,7 @@ class RootWindow:
         features = featuresFile(image=self.rawImage)
         features = np.reshape(features, (1, -1))
         prediction = self.classifier.predict(features)
-        showinfo("Classificação", f"BIRADS {prediction[0]}")
+        showinfo("Classificação", f"BIRADS {5 if prediction[0] == 2 else prediction[0]}")
 
     def getFeatures(self, screen):
         showFeatures(self.rawImage, screen)
