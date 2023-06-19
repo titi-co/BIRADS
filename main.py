@@ -9,18 +9,18 @@ import numpy as np
 from utils import trainModel, loadModel, saveModel, showFeatures, featuresFile
 
 
-defaultWidth = 200
-defaultHeight = 200
+DEFAULT_WIDTH = 200
+DEFAULT_HEIGHT = 200
 
-minImageSize = 0
-maxImageSize = 5000
+MIN_SIZE = 0
+MAX_SIZE = 5000
 
-selectionSize = 100
+SELECTION_WINDOW_SIZE = 100
 
 
 class TextureWindow(tk.Toplevel):
     def __init__(self, root):
-        super().__init__(root)
+        super().__init__(root) 
         self.geometry("400x300")
         self.frame = tk.Frame(self)
         self.text = tk.StringVar()
@@ -61,7 +61,7 @@ class SelectionWindow(tk.Toplevel):
 
         self.quantizationOptions = tk.Menu(self.selectionMenu)
         self.selectionMenu.add_cascade(
-            label="Quantization", menu=self.quantizationOptions)
+            label="Quantização", menu=self.quantizationOptions)
         self.quantizationOptions.add_command(
             label="2", command=lambda: self.changeQuantization(2))
         self.quantizationOptions.add_command(
@@ -81,7 +81,7 @@ class SelectionWindow(tk.Toplevel):
 
         self.resolutionOptions = tk.Menu(self.selectionMenu)
         self.selectionMenu.add_cascade(
-            label="Resolution", menu=self.resolutionOptions)
+            label="Resolução", menu=self.resolutionOptions)
         self.resolutionOptions.add_command(
             label="2x2", command=lambda: self.changeRes(2))
         self.resolutionOptions.add_command(
@@ -98,19 +98,21 @@ class SelectionWindow(tk.Toplevel):
             label="128x128", command=lambda: self.changeRes(128))
         self.resolutionOptions.add_command(
             label="256x256", command=lambda: self.changeRes(256))
+        self.resolutionOptions.add_command(
+            label="512x512", command=lambda: self.changeRes(512))
 
         self.equalizationOptions = tk.Menu(self.selectionMenu)
         self.selectionMenu.add_cascade(
-            label="Equalization", menu=self.equalizationOptions)
+            label="Equalização", menu=self.equalizationOptions)
         self.equalizationOptions.add_command(
-            label="Equalize", command=self.equalizeImage)
+            label="Equalizar", command=self.equalizeImage)
 
         # TEXTURE MENU
         self.textureOptions = tk.Menu(self.selectionMenu)
         self.selectionMenu.add_cascade(
-            label="Texture", menu=self.textureOptions)
+            label="Textura", menu=self.textureOptions)
         self.textureOptions.add_command(
-            label="Compute features", command=self.features)
+            label="Computar características", command=self.features)
 
         self.canvas = tk.Canvas(self, width=w, height=h)
         self.tkImage = ImageTk.PhotoImage(self.displayedImage)
@@ -137,9 +139,9 @@ class SelectionWindow(tk.Toplevel):
 
         if self.equalization:
             self.displayedImage = ImageOps.equalize(self.displayedImage)
-            self.selectionMenu.entryconfig("Texture", state="disabled")
+            self.selectionMenu.entryconfig("Textura", state="disabled")
         else:
-            self.selectionMenu.entryconfig("Texture", state="normal")
+            self.selectionMenu.entryconfig("Textura", state="normal")
 
         self.tkImage = ImageTk.PhotoImage(self.displayedImage)
         self.imageCanvas = self.canvas.create_image(
@@ -165,48 +167,47 @@ class SelectionWindow(tk.Toplevel):
 class RootWindow:
     def __init__(self):
         self.screen = tk.Tk()
-        self.screen.geometry(f"{defaultWidth}x{defaultHeight}")
-        self.screen.minsize(defaultWidth, defaultHeight)
+        self.screen.geometry(f"{DEFAULT_WIDTH}x{DEFAULT_HEIGHT}")
+        self.screen.minsize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
         self.screen.eval('tk::PlaceWindow . center')
-        self.screen.title("BIRADS - PI")
+        self.screen.title("BIRADS")
 
         self.menubar = tk.Menu(self.screen)
         self.screen.config(menu=self.menubar)
 
-        # IMAGE OPTIONS MENU
+        # MENU PRINCIPAL
         self.imageOptions = tk.Menu(self.menubar)
         self.menubar.add_cascade(
-            label="Image options", menu=self.imageOptions)
+            label="BIRADS", menu=self.imageOptions)
         self.imageOptions.add_command(
-            label="Open Image", command=self.loadImage)
+            label="Abrir imagem", command=self.loadImage)
         self.imageOptions.add_command(label="Zoom", command=self.zoom)
         self.imageOptions.add_command(
-            label="Reset Zoom", command=self.resetZoom)
+            label="Redefinir Zoom", command=self.resetZoom)
         self.imageOptions.add_command(
-            label="Select area", command=self.setSelection)
+            label="Selecionar area", command=self.setSelection)
 
-        # TEXTURE MENU
+        # MENU TEXTURA
         self.textureOptions = tk.Menu(self.menubar)
         self.menubar.add_cascade(
-            label="Texture", menu=self.textureOptions)
+            label="Textura", menu=self.textureOptions)
         self.textureOptions.add_command(
-            label="Compute features", command=self.features)
+            label="Computar características", command=self.features)
 
-        # CLASSIFIER MENU
-
+        # MENU CLASSIFICADOR
         self.classifierOptions = tk.Menu(self.menubar)
         self.menubar.add_cascade(
-            label="Classifier", menu=self.classifierOptions)
+            label="Classificador", menu=self.classifierOptions)
         self.classifierOptions.add_command(
-            label="Train model", command=self.train)
+            label="Treinar modelo", command=self.train)
         self.classifierOptions.add_command(
-            label="Save training", command=self.saveTraining)
+            label="Salvar modelo", command=self.saveTraining)
         self.classifierOptions.add_command(
-            label="Load training", command=self.loadTraining)
+            label="Carregar modelo", command=self.loadTraining)
         self.classifierOptions.add_command(
-            label="Classify", command=self.classify)
+            label="Classificar", command=self.classify)
 
-        # PARAMS
+        # PARAMETROS
         self.path = ""
         self.rawImage = None
         self.displayedImage = None
@@ -232,7 +233,7 @@ class RootWindow:
         self.uploadButton.pack(side=tk.LEFT)
 
         self.canvas = tk.Canvas(
-            self.screen, width=defaultWidth, height=defaultHeight)
+            self.screen, width=DEFAULT_WIDTH, height=DEFAULT_HEIGHT)
         self.canvas.pack()
 
         self.canvas.bind('<Button-1>', self.onClick)
@@ -243,11 +244,14 @@ class RootWindow:
         self.path = askopenfilename(
             filetypes=[("Image FIles", "*.png *.tif *.jpg *.jpeg")])
 
-        # No image found
+        # Se nenhuma imagem encontrada
         if self.path == '':
             return
 
-        # Open image in greyscale
+        # Abre a imagem em tons de cinza
+        # a imagem raw é como ela e carregada
+        # a displayed e a que vemos
+        # a tk é a que sofre alterações e computações
         self.rawImage = (Image.open(self.path)).convert("L")
         self.displayedImage = self.rawImage
         self.tkImage = ImageTk.PhotoImage(self.displayedImage)
@@ -269,7 +273,6 @@ class RootWindow:
 
     def setScale(self, value):
         self.imageScale = int(value)
-        # print(self.imageScale)
         self.reloadScreen()
 
     def resetZoom(self):
@@ -278,8 +281,8 @@ class RootWindow:
 
     def reloadScreen(self):
         _w, _h = self.getDisplayDimensions()
-        # Display scales under or above size delimiters
-        if _w > maxImageSize or _h > maxImageSize or _w <= minImageSize or _h <= minImageSize:
+        
+        if _w > MAX_SIZE or _h > MAX_SIZE or _w <= MIN_SIZE or _h <= MIN_SIZE:
             return
 
         self.displayedImage = self.rawImage.resize((_w, _h))
@@ -323,24 +326,24 @@ class RootWindow:
             self.selectionWindow.classifier = self.classifier
 
     def cropAreaDelimiters(self, x, y):
-        xMin = x - selectionSize
-        yMin = y - selectionSize
-        xMax = x + selectionSize
-        yMax = y + selectionSize
+        xMin = x - SELECTION_WINDOW_SIZE
+        yMin = y - SELECTION_WINDOW_SIZE
+        xMax = x + SELECTION_WINDOW_SIZE
+        yMax = y + SELECTION_WINDOW_SIZE
         return xMin, yMin, xMax, yMax
 
     def selectionDelimiters(self, x, y):
         xCenter, yCenter = self.canvas.canvasx(
             x), self.canvas.canvasy(y)
-        xMin, yMin = xCenter - selectionSize, yCenter - selectionSize
-        xMax, yMax = xCenter + selectionSize, yCenter + selectionSize
+        xMin, yMin = xCenter - SELECTION_WINDOW_SIZE, yCenter - SELECTION_WINDOW_SIZE
+        xMax, yMax = xCenter + SELECTION_WINDOW_SIZE, yCenter + SELECTION_WINDOW_SIZE
         return xMax, xMin, yMax, yMin
 
     def drawSelection(self, x, y):
         xMax, xMin, yMax, yMin = self.selectionDelimiters(
             x, y)
         self.selectionArea = self.canvas.create_rectangle(
-            xMin, yMin, xMax, yMax, dash=(4, 1), outline="red")
+            xMin, yMin, xMax, yMax, dash=(4, 1), outline="blue")
 
     def getClassifier(self, screen):
         self.classifier = trainModel(screen)
@@ -352,37 +355,37 @@ class RootWindow:
     def saveTraining(self):
         if self.classifier is not None:
             save = askquestion(
-                "BIRADS - PI", message="Do you want to save the model?") == "yes"
+                "BIRADS", message="Você quer salvar o modelo?") == "yes"
             if save:
                 saveModel(self.classifier)
         else:
             showerror(
-                "Error", "Unable to save - No trained classifier available")
+                "Erro", "Não foi possível salvar - Não existe nenhum classificador treinado disponível")
 
     def loadTraining(self):
         load = askquestion(
-            "BIRADS - PI", message="Do you want to load a model?") == "yes"
+            "BIRADS", message="Você quer carregar o modelo?") == "yes"
         if load:
             self.classifier = loadModel()
 
     def classify(self):
         if self.classifier is None:
-            showerror("Error", "No trained classifier")
+            showerror("Erro", "Nenhum classificador salvo.")
             return
         if self.rawImage is None:
-            showerror("Error", "No image found")
+            showerror("Erro", "Imagem não encontrada")
 
         features = featuresFile(image=self.rawImage)
         features = np.reshape(features, (1, -1))
         prediction = self.classifier.predict(features)
-        showinfo("Classification", f"BIRADS {prediction[0]}")
+        showinfo("Classificação", f"BIRADS {prediction[0]}")
 
     def getFeatures(self, screen):
         showFeatures(self.rawImage, screen)
 
     def features(self):
         textureWindow = TextureWindow(self.screen)
-        start_new_thread(self.getFeatures, (textureWindow,))
+        self.getFeatures(textureWindow)
 
 
 def main():
